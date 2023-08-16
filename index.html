@@ -2,316 +2,421 @@
 <html>
 
 <head>
-  <meta charset="UTF-8">
-  <title>ImgSynth</title>
-  <link rel="shortcut icon" type="image/x-icon" href="icon.ico" />
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Quicksand&display=swap');
+    <meta charset="UTF-8">
+    <title>ImgSynth</title>
+    <link rel="shortcut icon" type="image/x-icon" href="icon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            background-color: #e8e8e8;
 
-    :root {
-      font-size: 15px;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      /* background: linear-gradient(to right, #fad0c4, #ffd1ff); */
-
-      margin: 0;
-      padding: 0;
-
-      align-items: center;
-      font-size: 30px;
-      /* height: 100vh; */
-      color: #fff;
-      background-image: linear-gradient(125deg, #2c3e50, #27ae60, #2980b9, #e74c3c, #8e44ad);
-      background-size: 400%;
-      animation: move 20s infinite;
-    }
-
-    @keyframes move {
-      0% {
-        background-position: 0% 50%;
-      }
-
-      50% {
-        background-position: 100% 50%;
-      }
-
-      100% {
-        background-position: 0% 50%;
-      }
-    }
-
-    .parent-container {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
-
-    .container {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background-color: #ffffff;
-      border-radius: 20px;
-      background: rgba(255, 255, 255, 0.4);
-
-
-      width: 80vw;
-      height: 64vh;
-    }
-
-
-    .button {
-      /* background-color: #4CAF50; */
-      /* color: white; */
-      /* padding: 15px 32px; */
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      border-radius: 12px;
-      margin-bottom: 20px;
-      cursor: pointer;
-      justify-content: center;
-    }
-
-    button {
-
-      padding: 20px 30px;
-      font-size: 16px;
-      /* background-color: #000000; */
-      /* background: linear-gradient(to right, #fbc2eb, #a6c1ee); */
-      background: rgba(0, 0, 0, 0.4);
-
-
-      color: #fff;
-      border: none;
-      border-radius: 12px;
-      /* margin: 0 5px; */
-    }
-
-
-    .button:active {
-      transform: scale(0.95);
-      /* background-color: #45A04A; */
-    }
-
-    .output-container {
-      /* margin-top: -40px; */
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .output-image {
-      width: 200px;
-      margin: 10px;
-    }
-
-    .tool-text {
-      margin: 0;
-      color: #ffffff;
-
-      font-size: 32px;
-      font-weight: bold;
-      margin-bottom: 10px;
-      margin-top: 20px;
-      /* 调整文本向上移动的距离 */
-    }
-
-    /* 示例CSS代码 */
-    input[type='file'] {
-      display: none;
-    }
-
-    .custom-file-upload {
-      /* background: linear-gradient(to right, #fbc2eb, #a6c1ee);
-      background: rgba(255, 255, 255, 0.4);
-       */
-      background: rgba(0, 0, 0, 0.4);
-
-      color: white;
-      padding: 30px 32px;
-      text-align: center;
-      text-decoration: none;
-      display: inline-block;
-      font-size: 16px;
-      border-radius: 12px;
-      margin-bottom: 10px;
-      /* margin-top: -0px; */
-
-      cursor: pointer;
-    }
-
-    /* 将实际的输入框隐藏 */
-    #backgroundImageInput {
-      display: none;
-    }
-
-    @media (max-width: 600px) {
-      .output-image {
-        width: 42%;
-      }
-
-    }
-  </style>
-  <script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
-  <script>
-    let backgroundImg;
-    const itemImages = [];
-    let zip;
-    let processedCount = 0;
-
-    function loadBackgroundImage(event) {
-      const file = event.target.files[0];
-      const img = new Image();
-      img.onload = () => {
-        backgroundImg = img;
-      };
-      img.src = URL.createObjectURL(file);
-    }
-
-    function loadItemImages(event) {
-      const files = event.target.files;
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const img = new Image();
-        img.onload = () => {
-          itemImages.push(img);
-        };
-        img.src = URL.createObjectURL(file);
-      }
-      updateProgress(files.length);
-
-    }
-
-    function processImages() {
-      zip = new JSZip();
-      const promises = [];
-
-      for (let i = 0; i < itemImages.length; i++) {
-        const itemImg = itemImages[i];
-
-        // 创建虚拟的Canvas，并设置宽高与背景图一致
-        const canvas = document.createElement('canvas');
-        canvas.width = backgroundImg.width;
-        canvas.height = backgroundImg.height;
-        const ctx = canvas.getContext('2d');
-
-        // 计算物品图的缩小比例
-        var itemImgwidth = itemImg.width;
-        var maxHeight = canvas.height * 0.6;
-        var maxwidth = canvas.width * 0.95;
-        var scale = maxHeight / itemImg.height;
-        if (itemImgwidth * scale <= backgroundImg.width * 0.95) {
-          scale = maxHeight / itemImg.height;
-        } else {
-          scale = maxwidth / itemImg.width;
         }
 
-        const scaledWidth = itemImg.width * scale;
-        const scaledHeight = itemImg.height * scale;
+        .header {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100px;
+            margin-top: 20px;
 
-        // 计算物品图放置的位置坐标
-        const posX = (backgroundImg.width - scaledWidth) / 2;
-        const posY = (backgroundImg.height - scaledHeight) / 2 + 100;
+            /* 根据你的需求设置高度 */
 
-        // 在虚拟的Canvas上绘制背景图和物品图
-        ctx.drawImage(backgroundImg, 0, 0);
-        ctx.drawImage(itemImg, posX, posY, scaledWidth, scaledHeight);
+        }
 
-        const promise = new Promise((resolve, reject) => {
-          canvas.toBlob((blob) => {
-            zip.file(`output_${i + 1}.png`, blob);
-            const imgUrl = URL.createObjectURL(blob);
-            showImage(imgUrl);
-            resolve();
-          }, 'image/png');
+        .icon-container {
+            width: 120px;
+            /* 根据你的图标尺寸设置宽度 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .icon-container img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .panel {
+            width: 320px;
+            margin-bottom: 10px;
+            border-radius: 30px;
+            background: #e0e0e0;
+            box-shadow: 20px 20px 60px #bebebe,
+                -20px -20px 60px #ffffff;
+            overflow: hidden;
+            text-align: center;
+            /* 添加这一行 */
+            transition: height 0.3s ease-in-out;
+        }
+
+        .panel.collapsed {
+            height: 60px;
+        }
+
+        .panel.expanded {
+            height: 200px;
+        }
+
+        .panel-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .panel h2 {
+            margin-top: 16px;
+            font-size: 20px;
+            font-weight: bold;
+
+        }
+
+        /* 示例CSS代码 */
+        input[type='file'] {
+            display: none;
+        }
+
+        .custom-file-upload1 {
+            /* background: linear-gradient(to right, #fbc2eb, #a6c1ee);
+      background: rgba(255, 255, 255, 0.4);
+       */
+            background: rgba(0, 0, 0, 0.4);
+            margin-top: 20px;
+            color: #090909;
+            padding: 0.7em 1.7em;
+            font-size: 18px;
+            border-radius: 0.5em;
+            background: #e8e8e8;
+            border: 1px solid #e8e8e8;
+            transition: all .3s;
+            box-shadow: 6px 6px 12px #c5c5c5,
+                -6px -6px 12px #ffffff;
+            cursor: pointer;
+        }
+
+        .custom-file-upload1:active {
+            color: #666;
+            box-shadow: inset 4px 4px 12px #c5c5c5,
+                inset -4px -4px 12px #ffffff;
+        }
+
+        .custom-file-upload {
+            /* background: linear-gradient(to right, #fbc2eb, #a6c1ee);
+      background: rgba(255, 255, 255, 0.4);
+       */
+            background: rgba(0, 0, 0, 0.4);
+            margin-top: 20px;
+            color: #090909;
+            padding: 0.7em 1.7em;
+            font-size: 18px;
+            border-radius: 0.5em;
+            background: #e8e8e8;
+            border: 1px solid #e8e8e8;
+            transition: all .3s;
+            box-shadow: 6px 6px 12px #c5c5c5,
+                -6px -6px 12px #ffffff;
+            cursor: pointer;
+        }
+
+        .custom-file-upload:active {
+            color: #666;
+            box-shadow: inset 4px 4px 12px #c5c5c5,
+                inset -4px -4px 12px #ffffff;
+        }
+
+        /* 将实际的输入框隐藏 */
+        #backgroundImageInput {
+            display: none;
+        }
+
+        .loader {
+            margin-top: 20px;
+            width: 4em;
+            height: 4em;
+
+            background: linear-gradient(-45deg, #fc00ff 0%, #00dbde 100%);
+            animation: spin 3s infinite;
+        }
+
+        .loader::before {
+            content: "";
+            z-index: -1;
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(-45deg, #fc00ff 0%, #00dbde 100%);
+            transform: translate3d(0, 0, 0) scale(0.95);
+            filter: blur(20px);
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(-45deg);
+            }
+
+            50% {
+                transform: rotate(-360deg);
+                border-radius: 50%;
+            }
+
+            100% {
+                transform: rotate(-45deg);
+            }
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px 40px;
+            border: 0;
+            margin-top: 20px;
+
+            position: relative;
+            overflow: hidden;
+            border-radius: 10rem;
+            transition: all 0.02s;
+            font-weight: bold;
+            color: rgb(37, 37, 37);
+            z-index: 0;
+            box-shadow: 0 0px 7px -5px rgba(0, 0, 0, 0.5);
+        }
+
+        .button:hover {
+            background: rgb(193, 228, 248);
+            color: rgb(33, 0, 85);
+        }
+
+        .button:active {
+            transform: scale(0.97);
+        }
+
+        .hoverEffect {
+            position: absolute;
+            bottom: 0;
+            top: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1;
+        }
+
+        .hoverEffect div {
+            background: rgb(222, 0, 75);
+            background: linear-gradient(90deg, rgba(222, 0, 75, 1) 0%, rgba(191, 70, 255, 1) 49%, rgba(0, 212, 255, 1) 100%);
+            border-radius: 40rem;
+            width: 10rem;
+            height: 10rem;
+            transition: 0.4s;
+            filter: blur(20px);
+            animation: effect infinite 3s linear;
+            opacity: 0.5;
+        }
+
+        .button:hover .hoverEffect div {
+            width: 8rem;
+            height: 8rem;
+        }
+
+        @keyframes effect {
+
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .output-container {
+            /* margin-top: -40px; */
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .output-image {
+            width: 200px;
+            margin: 10px;
+        }
+
+        .footer__copy {
+            margin-top: 4.8rem;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/jszip/dist/jszip.min.js"></script>
+    <script>
+        let backgroundImg = 'background.jpg';
+
+        const itemImages = [];
+        let zip;
+
+        function loadBackgroundImage(event) {
+            const file = event.target.files[0];
+            const img = new Image();
+            img.onload = () => {
+                backgroundImg = img;
+            };
+            img.src = URL.createObjectURL(file);
+        }
+
+        function loadItemImages(event) {
+            const files = event.target.files;
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const img = new Image();
+                img.onload = () => {
+                    itemImages.push(img);
+                    // 检查是否所有物品图像都已加载完
+                    if (itemImages.length === files.length) {
+                        processImages();
+                    }
+                };
+                img.src = URL.createObjectURL(file);
+            }
+        }
+
+        function processImages() {
+            zip = new JSZip();
+            const promises = [];
+
+            for (let i = 0; i < itemImages.length; i++) {
+                const itemImg = itemImages[i];
+
+                const canvas = document.createElement('canvas');
+                canvas.width = backgroundImg.width;
+                canvas.height = backgroundImg.height;
+                const ctx = canvas.getContext('2d');
+
+                var itemImgwidth = itemImg.width;
+                var maxHeight = canvas.height * 0.6;
+                var maxwidth = canvas.width * 0.95;
+                var scale = maxHeight / itemImg.height;
+                if (itemImgwidth * scale <= backgroundImg.width * 0.95) {
+                    scale = maxHeight / itemImg.height;
+                } else {
+                    scale = maxwidth / itemImg.width;
+                }
+                const scaledWidth = itemImg.width * scale;
+                const scaledHeight = itemImg.height * scale;
+
+                const posX = (backgroundImg.width - scaledWidth) / 2;
+                const posY = (backgroundImg.height - scaledHeight) / 2 + 100;
+
+                ctx.drawImage(backgroundImg, 0, 0);
+                ctx.drawImage(itemImg, posX, posY, scaledWidth, scaledHeight);
+
+                const promise = new Promise((resolve, reject) => {
+                    canvas.toBlob((blob) => {
+                        zip.file(`output_${i + 1}.png`, blob);
+                        resolve();
+                    }, 'image/png');
+                });
+
+                promises.push(promise);
+            }
+
+            Promise.all(promises).then(() => {
+                console.log('All images processed');
+            });
+        }
+
+        function downloadZip() {
+            zip.generateAsync({
+                type: 'blob'
+            }).then((zipBlob) => {
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(zipBlob);
+                link.download = 'processed_images.zip';
+                link.click();
+            });
+        }
+        window.addEventListener("DOMContentLoaded", function () {
+            const img = new Image();
+            img.onload = () => {
+                backgroundImg = img;
+            };
+            img.src = backgroundImg;
+
+            const topPanel = document.getElementById("topPanel");
+            const backgroundImageInput = document.getElementById("custom-file-upload1");
+
+            topPanel.addEventListener("click", function (event) {
+                if (event.target !== backgroundImageInput) {
+                    togglePanel("topPanel");
+                }
+            });
+
+            const bottomPanel = document.getElementById("bottomPanel");
+            const itemImagesInput = document.getElementById("itemImagesInput");
+
+            itemImagesInput.addEventListener("change", function () {
+                const panelContent = itemImagesInput.parentElement;
+                panelContent.innerHTML = `<div class="loader"></div>`;
+                // Simulate loading process
+                setTimeout(function () {
+                    panelContent.innerHTML =
+                        `<button class="button"onclick="downloadZip()">下载图像<div class="hoverEffect"><div></div></div></button>`;
+                }, 6000);
+            });
         });
 
-        promises.push(promise);
-      }
-
-      Promise.all(promises).then(() => {
-        console.log('All images processed');
-      });
-    }
-
-    function showImage(imgUrl) {
-
-      const imageContainer = document.getElementById('outputContainer');
-      const imgElement = document.createElement('img');
-      imgElement.classList.add('output-image');
-      imgElement.src = imgUrl;
-      imageContainer.appendChild(imgElement);
-      processedCount++;
-      updateProgressLabel();
-    }
-
-    function updateProgress(num) {
-      const progressLabel = document.getElementById('progressLabel');
-      progressLabel.innerHTML = `订单共${num}张<br>点击合并`;
-    }
-
-    function updateProgressLabel() {
-      const progressLabel = document.getElementById('progressLabel');
-      if (processedCount === itemImages.length) {
-        // progressLabel.textContent = `已完成`;
-        progressLabel.innerHTML = `合并完毕<br>共${processedCount}张`;
-      } else {
-        progressLabel.innerHTML = `还剩${itemImages.length-processedCount}张<br>未合并`;
-      }
-    }
-
-    function downloadZip() {
-      var now = new Date();
-      zip.generateAsync({
-        type: 'blob'
-      }).then((zipBlob) => {
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(zipBlob);
-        link.download = `${now.getMonth()}月${now.getDate()}日订单.zip`;
-        link.click();
-      });
-    }
-  </script>
+        function togglePanel(panelId) {
+            const panel = document.getElementById(panelId);
+            panel.classList.toggle("collapsed");
+            panel.classList.toggle("expanded");
+        }
+    </script>
 </head>
 
 <body>
-  <div class="parent-container">
-    <div class="container">
-      <h1 class="tool-text">批量图像合并工具</h1>
-      <label for="backgroundImageInput" class="custom-file-upload">
-        -选择背景图片-
-      </label>
-      <input type="file" id="backgroundImageInput" accept="image/*" onchange="loadBackgroundImage(event)" />
-
-      <label for="itemImagesInput" class="custom-file-upload">
-        -选择订单图片-
-      </label>
-      <input type="file" id="itemImagesInput" accept="image/*" multiple onchange="loadItemImages(event)" />
-      <!-- <div>-----------------------------------------</div> -->
-
-      <div class="button">
-        <button onclick="processImages()">
-          <div id="progressLabel">当前无任务</div>
-
-        </button>
-      </div>
-      <div class="button">
-        <!-- <div>打包文件</div> -->
-        <button onclick="downloadZip()">
-          下载打包文件
-        </button>
-      </div>
+    <div class="header">
+        <div class="icon-container">
+            <img src="icon.ico" alt="Icon">
+        </div>
     </div>
-  </div>
-  <div class="output-container" id="outputContainer"></div>
+    <div class="container">
+        <div id="topPanel" class="panel collapsed">
+            <h2>更换背景图</h2>
+            <div class="panel-content">
+                <label for="backgroundImageInput" class="custom-file-upload1">
+                    更换背景
+                </label>
+                <input type="file" id="backgroundImageInput" accept="image/*" onchange="loadBackgroundImage(event)" />
+
+            </div>
+        </div>
+        <br>
+        <div id="bottomPanel" class="panel expanded">
+            <h2>合并操作</h2>
+            <div class="panel-content">
+                <label for="itemImagesInput" class="custom-file-upload">
+                    选择图片
+                </label>
+                <input type="file" id="itemImagesInput" accept="image/*" multiple onchange="loadItemImages(event)" />
+
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="footer__bg">
+            <div class="footer__container container grid">
+
+                <p class="footer__copy">
+                    &#169; ZHUSHAOKUN
+                </p>
+            </div>
+    </footer>
 
 </body>
 
