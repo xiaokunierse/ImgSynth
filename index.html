@@ -44,6 +44,8 @@
     }
 
     .panel {
+      justify-content: center;
+      align-items: center;
       width: 300px;
       margin-bottom: 10px;
       border-radius: 30px;
@@ -140,9 +142,14 @@
       margin-top: 20px;
       width: 4em;
       height: 4em;
-
       background: linear-gradient(-45deg, #fc00ff 0%, #00dbde 100%);
       animation: spin 3s infinite;
+      transition: width .4s ease-out, height .4s ease-out;
+    }
+
+    .loader.shrink {
+      width: 0em;
+      height: 0em;
     }
 
     .loader::before {
@@ -158,6 +165,8 @@
     @keyframes spin {
       0% {
         transform: rotate(-45deg);
+        border-radius: 10%;
+
       }
 
       50% {
@@ -167,6 +176,8 @@
 
       100% {
         transform: rotate(-45deg);
+        border-radius: 10%;
+
       }
     }
 
@@ -174,23 +185,17 @@
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      padding: 20px 40px;
+      padding: 20px 20px;
       border: 0;
       margin-top: 20px;
-
       position: relative;
       overflow: hidden;
-      border-radius: 10rem;
+      border-radius: 50rem;
       transition: all 0.02s;
       font-weight: bold;
       color: rgb(37, 37, 37);
       z-index: 0;
       box-shadow: 0 0px 7px -5px rgba(0, 0, 0, 0.5);
-    }
-
-    .button:hover {
-      background: rgb(193, 228, 248);
-      color: rgb(33, 0, 85);
     }
 
     .button:active {
@@ -326,12 +331,13 @@
     }
 
     function downloadZip() {
+      var now = new Date();
       zip.generateAsync({
         type: 'blob'
       }).then((zipBlob) => {
         const link = document.createElement('a');
         link.href = URL.createObjectURL(zipBlob);
-        link.download = 'processed_images.zip';
+        link.download = `${now.getMonth()}月${now.getDate()}日订单.zip`;
         link.click();
       });
     }
@@ -359,9 +365,16 @@
         panelContent.innerHTML = `<div class="loader"></div>`;
         // Simulate loading process
         setTimeout(function () {
+          var loader = document.querySelector('.loader');
+          loader.classList.add('shrink');
           panelContent.innerHTML =
             `<button class="button"onclick="downloadZip()">下载图像<div class="hoverEffect"><div></div></div></button>`;
-        }, 9000);
+        }, 7000);
+        setTimeout(function () {
+          var loader = document.querySelector('.loader');
+          loader.classList.add('shrink');
+
+        }, 6800);
       });
     });
 
@@ -392,7 +405,7 @@
     </div>
     <br>
     <div id="bottomPanel" class="panel expanded">
-      <h2>合并操作</h2>
+      <h2>操作面板</h2>
       <div class="panel-content">
         <label for="itemImagesInput" class="custom-file-upload">
           选择图片
